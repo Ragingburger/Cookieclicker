@@ -1,0 +1,69 @@
+# Command to give the special glass item with a custom NBT tag
+command /giveglass:
+    description: Gives the player a special glass item
+    trigger:
+        give player 1 glass named "&bSpecial Glass" with lore "&7Custom NBT Tag"
+
+# Variables to track cookies and grandmas
+variables:
+    {cookies::%player%} = 0
+    {grandmas::%player%} = 0
+    {cursor::%player%} = 0
+
+# Event to handle right-clicking the special glass to add cookies
+on right click:
+    if player's tool is glass named "&bSpecial Glass" with lore "&7Custom NBT Tag":
+        add 1 to {cookies::%player%}
+        set {_cookieCount} to {cookies::%player%}
+        send action bar "&aCookies: %{_cookieCount}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}%" to player
+
+# Event to handle left-clicking the special glass to buy a grandma
+on left click:
+    if player is not sneaking:
+        if player's tool is glass named "&bSpecial Glass" with lore "&7Custom NBT Tag":
+            if {cookies::%player%} >= 50:
+                remove 50 from {cookies::%player%}
+                add 1 to {grandmas::%player%}
+                send action bar "&aCookies: ^%{cookies::%player%}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}%" to player
+            else:
+                send action bar "&cNot enough cookies! You need 50 cookies." to player
+
+
+on left click:
+    if player is sneaking:
+        if player's tool is glass named "&bSpecial Glass" with lore "&7Custom NBT Tag":
+            if {cookies::%player%} >= 10:
+                send "You bought a cursor" to player
+                remove 10 from {cookies::%player%}
+                add 1 to {cursor::%player%}
+                send action bar "&aCookies: ^%{cookies::%player%}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}%" to player
+            else:
+                send action bar "&cNot enough cookies! You need 10 cookies." to player
+
+
+
+
+
+
+# Scheduled task to add cookies from grandmas
+every 1 second:
+    loop all players:
+        if {cookies::%loop-player%} > 0:
+            add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
+            add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
+            send action bar  "&aCookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}%" to loop-player
+
+
+command /reset:
+    description: Resets your stats
+    trigger:
+        set {cookies::%player%} to 0
+        set {grandmas::%player%} to 0
+        set {cursor::%player%} to 0
+
+command /help:
+    description: tells you how to player
+    trigger:
+        send "Hello there. to play this you have to, right click on the cookie" to player
+        send "if you want to buy a grandma then you have to press left click." to player
+        send "if you want to buy cursor then shift left click. MORE UPDATES SOON" to player
