@@ -2,47 +2,23 @@
 command /giveglass:
     description: Gives the player a special glass item
     trigger:
-        give player 1 glass named "&bSpecial Glass" with lore "&7Custom NBT Tag"
+        give player 1 glass named "&bCookie jar" with lore "&7Custom NBT Tag"
 
 # Variables to track cookies and grandmas
 variables:
     {cookies::%player%} = 0
     {grandmas::%player%} = 0
     {cursor::%player%} = 0
+    {femboys::%player%} = 0
+    {FemboyUpgrade} = false
+    {upgradeFemboy::%player%} = 0
 
 # Event to handle right-clicking the special glass to add cookies
 on right click:
-    if player's tool is glass named "&bSpecial Glass" with lore "&7Custom NBT Tag":
+    if player's tool is glass named "&bCookie jar" with lore "&7Custom NBT Tag":
         add 1 to {cookies::%player%}
         set {_cookieCount} to {cookies::%player%}
-        send action bar "&aCookies: %{_cookieCount}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}%" to player
-
-# Event to handle left-clicking the special glass to buy a grandma
-on left click:
-    if player is not sneaking:
-        if player's tool is glass named "&bSpecial Glass" with lore "&7Custom NBT Tag":
-            if {cookies::%player%} >= 50:
-                remove 50 from {cookies::%player%}
-                add 1 to {grandmas::%player%}
-                send action bar "&aCookies: ^%{cookies::%player%}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}%" to player
-            else:
-                send action bar "&cNot enough cookies! You need 50 cookies." to player
-
-
-on left click:
-    if player is sneaking:
-        if player's tool is glass named "&bSpecial Glass" with lore "&7Custom NBT Tag":
-            if {cookies::%player%} >= 10:
-                send "You bought a cursor" to player
-                remove 10 from {cookies::%player%}
-                add 1 to {cursor::%player%}
-                send action bar "&aCookies: ^%{cookies::%player%}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}%" to player
-            else:
-                send action bar "&cNot enough cookies! You need 10 cookies." to player
-
-
-
-
+        send action bar "&6Cookies: %{_cookieCount}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}% | Femboys: %{femboys::%player%}%" to player
 
 
 # Scheduled task to add cookies from grandmas
@@ -51,7 +27,15 @@ every 1 second:
         if {cookies::%loop-player%} > 0:
             add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
             add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
-            send action bar  "&aCookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}%" to loop-player
+            add 5 * {femboys::%loop-player%} to {cookies::%loop-player%}
+            send action bar  "&6Cookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}% | Femboys: %{femboys::%loop-player%}%" to loop-player
+        
+        else if {cookies::%loop-player%} > 0:
+            if {upgradeFemboy::%loop-player%} = 1:
+                add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
+                add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
+                add 7 * {femboys::%loop-player%} to {cookies::%loop-player%}
+                send action bar  "&6Cookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}% | Ultra Femboys: %{femboys::%loop-player%}%" to loop-player
 
 
 command /reset:
@@ -60,10 +44,52 @@ command /reset:
         set {cookies::%player%} to 0
         set {grandmas::%player%} to 0
         set {cursor::%player%} to 0
+        set {femboys::%player%} to 0
+        set {femboyUpgrade} to false
+        set {upgradeFemboy::%player%} to 0
 
-command /help:
-    description: tells you how to player
-    trigger:
-        send "Hello there. to play this you have to, right click on the cookie" to player
-        send "if you want to buy a grandma then you have to press left click." to player
-        send "if you want to buy cursor then shift left click. MORE UPDATES SOON" to player
+
+
+
+on left click:
+    if player's tool is glass named "&bCookie jar" with lore "&7Custom NBT Tag":
+        set metadata tag "vanillaGUI" of player to chest inventory with 5 rows named "&6Upgrades"
+        set slot 11 of metadata tag "vanillaGUI" of player to skull of ("Leeksey" parsed as offline player) named "&6Grandma's"
+        set slot 13 of metadata tag "vanillaGUI" of player to skull of ("Slippeth" parsed as offline player) named "&6Cursor"
+        set slot 0,2,4,6,8,9,17,18,20,22,26,27,29,31,33,34,35,36,38,40,42,43,44 of metadata tag "vanillaGUI" of player to black stained glass pane named "&7"
+        set slot 1,3,5,7,10,12,14,16,19,21,23,25,28,30,32,34,37,39,41,43 of metadata tag "vanillaGUI" of player to lime stained glass pane named "&7"
+        set slot 15 of metadata tag "vanillaGUI" of player to skull of ("FemboyVT" parsed as offline player) named "&6Femboy's"
+        open (metadata tag "vanillaGUI" of player) to player
+        if {upgradeFemboy::%player%} = 0:
+            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("nenderson" parsed as offline player) named "&6Femboy Upgrade"
+        else if {upgradeFemboy::%player%} = 1:
+            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("sSyniKk" parsed as offline player) named "&Already Bought"
+
+on inventory click:
+    if event-inventory = (metadata tag "vanillaGUI" of player):
+        cancel event
+        if index of event-slot is 11:
+            if event-click type is left mouse button:
+                if {cookies::%player%} >= 50: 
+                    add 1 to {grandmas::%player%}
+                    remove 50 from {cookies::%player%}
+        else if index of event-slot is 13:
+            if event-click type is left mouse button:
+                if {cookies::%player%} >= 10:
+                    add 1 to {cursor::%player%}
+                    remove 10 from {cookies::%player%}
+        else if index of event-slot is 15:
+            if event-click type is left mouse button:
+                if {cookies::%player%} >= 75:
+                    add 1 to {femboys::%player%}
+                    remove 75 from {cookies::%players%}
+        else if index of event-slot is 24:
+            if event-click type is left mouse button:
+                if {FemboyUpgrade} is false:
+                if {femboys::%player%} >= 1:
+                    if {cookies::%player%} >= 100:
+                        add 1 to {upgradeFemboy::%player%}
+                        remove 100 from {cookies::%player%}
+                        set {femboyUpgrade} to true
+                else if {cookies::%player%} <= 100:
+                    send "&CYou cannot afford this"
