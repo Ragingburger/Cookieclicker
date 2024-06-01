@@ -13,6 +13,7 @@ variables:
     {FemboyUpgrade} = false
     {upgradeFemboy::%player%} = 0
 
+
 # Event to handle right-clicking the special glass to add cookies
 on right click:
     if player's tool is glass named "&bCookie jar" with lore "&7Custom NBT Tag":
@@ -25,18 +26,15 @@ on right click:
 every 1 second:
     loop all players:
         if {cookies::%loop-player%} > 0:
-            add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
-            add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
-            add 5 * {femboys::%loop-player%} to {cookies::%loop-player%}
-            send action bar  "&6Cookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}% | Femboys: %{femboys::%loop-player%}%" to loop-player
-        
-        else if {cookies::%loop-player%} > 0:
+            if {upgradeFemboy::%loop-player%} = 0:
+                add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
+                add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
+                add 5 * {femboys::%loop-player%} to {cookies::%loop-player%}
             if {upgradeFemboy::%loop-player%} = 1:
                 add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
                 add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
                 add 7 * {femboys::%loop-player%} to {cookies::%loop-player%}
-                send action bar  "&6Cookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}% | Ultra Femboys: %{femboys::%loop-player%}%" to loop-player
-
+            send action bar  "&6Cookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}% | Femboys: %{femboys::%loop-player%}%" to loop-player
 
 command /reset:
     description: Resets your stats
@@ -63,7 +61,7 @@ on left click:
         if {upgradeFemboy::%player%} = 0:
             set slot 24 of metadata tag "vanillaGUI" of player to skull of ("nenderson" parsed as offline player) named "&6Femboy Upgrade"
         else if {upgradeFemboy::%player%} = 1:
-            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("sSyniKk" parsed as offline player) named "&Already Bought"
+            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("sSyniKk" parsed as offline player) named "&cAlready Bought"
 
 on inventory click:
     if event-inventory = (metadata tag "vanillaGUI" of player):
@@ -85,11 +83,13 @@ on inventory click:
                     remove 75 from {cookies::%players%}
         else if index of event-slot is 24:
             if event-click type is left mouse button:
-                if {FemboyUpgrade} is false:
-                if {femboys::%player%} >= 1:
-                    if {cookies::%player%} >= 100:
-                        add 1 to {upgradeFemboy::%player%}
-                        remove 100 from {cookies::%player%}
-                        set {femboyUpgrade} to true
-                else if {cookies::%player%} <= 100:
-                    send "&CYou cannot afford this"
+                if {upgradeFemboy::%player%} = 0:
+                    if {femboys::%player%} >= 1:
+                        if {cookies::%player%} >= 100:
+                            add 1 to {upgradeFemboy::%player%}
+
+           
+
+command /cookies:
+    trigger:
+        set {cookies::%player%} to 175
