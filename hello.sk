@@ -22,7 +22,7 @@ on right click:
         send action bar "&6Cookies: %{_cookieCount}% | Grandmas: %{grandmas::%player%}% | Cursors: %{cursor::%player%}% | Femboys: %{femboys::%player%}%" to player
 
 
-# Scheduled task to add cookies from grandmas
+# cookies upgrade manager
 every 1 second:
     loop all players:
         if {cookies::%loop-player%} > 0:
@@ -34,6 +34,14 @@ every 1 second:
                 add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
                 add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
                 add 7 * {femboys::%loop-player%} to {cookies::%loop-player%}
+            if {upgradeFemboy::%loop-player%} = 2:
+                add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
+                add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
+                add 9 * {femboys::%loop-player%} to {cookies::%loop-player%}
+            if {upgradeFemboy::%loop-player%} = 3:
+                add 2 * {grandmas::%loop-player%} to {cookies::%loop-player%}
+                add 0.2 * {cursor::%loop-player%} to {cookies::%loop-player%}
+                add 11 * {femboys::%loop-player%} to {cookies::%loop-player%}
             send action bar  "&6Cookies: %{cookies::%loop-player%}% | Grandmas: %{grandmas::%loop-player%}% | Cursors: %{cursor::%loop-player%}% | Femboys: %{femboys::%loop-player%}%" to loop-player
 
 command /reset:
@@ -47,21 +55,69 @@ command /reset:
         set {upgradeFemboy::%player%} to 0
 
 
+command /debug:
+    description: check
+    trigger:
+        send "%{upgradeFemboy::%player%}%" to player
+        send "%{femboys::%player%}%" to player
+        send "%{cursor::%player%}%" to player
+        send "%{grandmas::%player%}%" to player
+        send "%{cookies::%player%}%" to player
+
+
+
 
 
 on left click:
     if player's tool is glass named "&bCookie jar" with lore "&7Custom NBT Tag":
         set metadata tag "vanillaGUI" of player to chest inventory with 5 rows named "&6Upgrades"
-        set slot 11 of metadata tag "vanillaGUI" of player to skull of ("Leeksey" parsed as offline player) named "&6Grandma's"
-        set slot 13 of metadata tag "vanillaGUI" of player to skull of ("Slippeth" parsed as offline player) named "&6Cursor"
-        set slot 0,2,4,6,8,9,17,18,20,22,26,27,29,31,33,34,35,36,38,40,42,43,44 of metadata tag "vanillaGUI" of player to black stained glass pane named "&7"
+        set slot 11 of metadata tag "vanillaGUI" of player to skull of ("Leeksey" parsed as offline player) named "&6Grandma's" with lore "It costs 50 cookies"
+        set slot 13 of metadata tag "vanillaGUI" of player to skull of ("Slippeth" parsed as offline player) named "&6Cursor" with lore "It costs 10 cookies"
+        set slot 0,2,4,6,8,9,17,18,20,22,26,27,29,31,34,35,36,38,40,43,44 of metadata tag "vanillaGUI" of player to black stained glass pane named "&7"
         set slot 1,3,5,7,10,12,14,16,19,21,23,25,28,30,32,34,37,39,41,43 of metadata tag "vanillaGUI" of player to lime stained glass pane named "&7"
-        set slot 15 of metadata tag "vanillaGUI" of player to skull of ("FemboyVT" parsed as offline player) named "&6Femboy's"
+        set slot 15 of metadata tag "vanillaGUI" of player to skull of ("FemboyVT" parsed as offline player) named "&6Femboy's" with lore "It costs 75 cookies"
         open (metadata tag "vanillaGUI" of player) to player
+    
+
+    # head_handle'
+    if {femboys::%player%} = 0:
+        set slot 24 of metadata tag "vanillaGUI" of player to skull of ("_Mugm" parsed as offline player) named "&6?????" 
+    if {upgradeFemboy::%player%} = 0:
+        if {femboys::%player%} = 1:
+            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("nenderson" parsed as offline player) named "&6Femboy Upgrade" with lore "It costs 100 cookies"
+    if {upgradeFemboy::%player%} >= 1:
+        set slot 24 of metadata tag "vanillaGUI" of player to skull of ("sSyniKk" parsed as offline player) named "&cAlready Bought"
+    
+    if {femboys::%player%} = 0:
         if {upgradeFemboy::%player%} = 0:
-            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("nenderson" parsed as offline player) named "&6Femboy Upgrade"
-        else if {upgradeFemboy::%player%} = 1:
-            set slot 24 of metadata tag "vanillaGUI" of player to skull of ("sSyniKk" parsed as offline player) named "&cAlready Bought"
+            set slot 33 of metadata tag "vanillaGUI" of player to skull of ("_Mugm" parsed as offline player) named "&6???"
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} = 0:
+            set slot 33 of metadata tag "vanillaGUI" of player to skull of ("_Mugm" parsed as offline player) named "&6????" 
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} = 1:
+            set slot 33 of metadata tag "vanillaGUI" of player to skull of ("Cjton" parsed as offline player) named "&6Better Femboy Upgrade"
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} >= 2:
+            set slot 33 of metadata tag "vanillaGUI" of player to skull of ("sSyniKK" parsed as offline player) named "&CAlready bought" 
+
+    if {femboys::%player%} = 0:
+        if {upgradeFemboy::%player%} = 0:
+            set slot 42 of metadata tag "vanillaGUI" of player to skull of ("_Mugm" parsed as offline player) named "&6???"
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} = 0:
+            set slot 42 of metadata tag "vanillaGUI" of player to skull of ("_Mugm" parsed as offline player) named "&6????"
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} = 1:
+            set slot 42 of metadata tag "vanillaGUI" of player to skull of ("_Mugm" parsed as offline player) named "&6????"  
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} = 2:
+            set slot 42 of metadata tag "vanillaGUI" of player to skull of ("MateFire" parsed as offline player) named "&6Even Better Femboy Upgrade"
+    if {femboys::%player%} = 1:
+        if {upgradeFemboy::%player%} >= 3:
+            set slot 42 of metadata tag "vanillaGUI" of player to skull of ("sSyniKK" parsed as offline player) named "&CAlready bought"          
+
+    
 
 on inventory click:
     if event-inventory = (metadata tag "vanillaGUI" of player):
@@ -87,9 +143,26 @@ on inventory click:
                     if {femboys::%player%} >= 1:
                         if {cookies::%player%} >= 100:
                             add 1 to {upgradeFemboy::%player%}
+                            remove 100 from {cookies::%player%}
+        else if index of event-slot is 33:
+            if event-click type is left mouse button:
+                if {cookies::%player%} >= 150:
+                    if {femboys::%player%} >= 1:
+                        if {upgradeFemboy::%player%} = 1:
+                            add 1 to {upgradeFemboy::%player%} 
+                            remove 150 from {cookies::%player%}
+        else if index of event-slot is 42:
+            if event-click type is left mouse button:
+                if {cookies::%player%} >= 200:
+                    if {femboys::%player%} >= 1:
+                        if {upgradeFemboy::%player%} = 2:
+                            add 1 to {upgradeFemboy::%player%} 
+                            remove 200 from {cookies::%player%}
+
 
            
 
 command /cookies:
     trigger:
-        set {cookies::%player%} to 175
+        add 175 to {cookies::%player%}
+
